@@ -1,0 +1,153 @@
+/* =========================
+   認証前ヘッダー（ログイン/登録）
+========================= */
+.auth-header {
+    width: 100%;
+    height: 80px;
+    background: #000;
+}
+
+.auth-header__inner {
+    width: 100%;
+    height: 100%;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    padding-left: 40px;
+}
+
+.auth-header__logo img {
+    height: 36px;
+    width: auto;
+    display: block;
+}
+
+/* =========================
+   認証後ヘッダー（トップ/一覧/マイページ）
+========================= */
+.top-header {
+    width: 100%;
+    height: 80px;
+    background: #000;
+}
+
+.top-header__inner {
+    position: relative;
+    max-width: 1512px;
+    height: 80px;
+    margin: 0 auto;
+    padding: 0 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    box-sizing: border-box;
+}
+
+.top-header__logo {
+    flex: 0 0 370px;
+    display: flex;
+    align-items: center;
+}
+
+.top-header__logo img {
+    height: 36px;
+    width: auto;
+    display: block;
+}
+
+.top-header__search {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 563px;
+    transform: translate(-50%, -50%);
+    max-width: calc(100% - (428px + 508px));
+}
+
+.top-header__search input {
+    width: 100%;
+    height: 40px;
+    padding: 0 12px;
+    border: none;
+    border-radius: 5px;
+    background: #fff;
+    color: #000;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+
+.top-header__nav {
+    flex: 0 0 450px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 20px;
+    white-space: nowrap;
+}
+
+.top-header__nav form {
+    margin: 0;
+}
+
+.top-header__link {
+    color: #fff;
+    font-size: 16px;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.top-header__link:hover {
+    text-decoration: underline;
+}
+
+.top-header__cta {
+    display: inline-block;
+    padding: 8px 16px;
+    background: #fff;
+    color: #000;
+    border: 1px solid #000;
+    border-radius: 5px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+/* =========================
+   レスポンシブ
+========================= */
+@media (max-width: 1511px) {
+    .top-header__inner {
+        padding: 0 16px;
+        gap: 16px;
+    }
+
+    .auth-header__inner {
+        padding: 0 16px;
+    }
+
+    .top-header__logo {
+        flex-basis: 360px;
+    }
+
+    .top-header__nav {
+        flex-basis: 440px;
+        gap: 16px;
+    }
+
+    .top-header__search {
+        max-width: calc(100% - (392px + 472px));
+    }
+}
+
+@media (max-width: 1100px) {
+    .top-header__search {
+        width: 520px;
+    }
+}
+
+@media (max-width: 980px) {
+    .top-header__search {
+        width: 480px;
+    }
+}

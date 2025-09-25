@@ -1,0 +1,134 @@
+.profile-form__content {
+    margin: 0 auto;
+    padding: 30px 15px 80px;
+    max-width: 1230px;
+}
+
+.profile-form__heading {
+    margin: 20px 0 30px;
+    text-align: center;
+}
+
+.profile-form__heading h2 {
+    font-size: 36px;
+    font-weight: 700;
+}
+
+.form {
+    margin: 0 auto;
+    width: 680px;
+}
+.avatar {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    margin: 10px 0 28px;
+}
+
+.avatar__img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #D9D9D9;
+    flex: 0 0 150px;
+}
+
+.avatar__img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 179px;
+    height: 49px;
+    border: 2px solid #FF5555;
+    border-radius: 10px;
+    color: #FF5555;
+    background: #fff;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background .2s ease, color .2s ease;
+}
+
+.avatar__button:hover {
+    background: #FF5555;
+    color: #fff;
+}
+
+.avatar__input {
+    display: none;
+}
+
+.form__group {
+    margin-bottom: 22px;
+}
+
+.form__group-title {
+    margin-bottom: 8px;
+}
+
+.form__label--item {
+    font-weight: 700;
+}
+
+.form__input--text input {
+    width: 100%;
+    height: 60px;
+    padding: 12px 14px;
+    border: 1px solid #5F5F5F;
+    border-radius: 4px;
+    background: #fff;
+    font-size: 16px;
+    appearance: none;
+}
+
+.form__input--text input::placeholder {
+    color: #9a9a9a;
+}
+
+.form__error {
+    min-height: 20px;
+    margin-top: 6px;
+    color: #ff0000;
+    font-size: 14px;
+}
+
+.form__button {
+    margin-top: 28px;
+    text-align: center;
+}
+
+.form__button-submit {
+    width: 680px;
+    height: 60px;
+    background: #FF5555;
+    color: #fff;
+    font-size: 18px;
+    font-weight: 700;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background .2s ease;
+}
+
+.form__button-submit:hover {
+    background: #e14a4a;
+}
+
+@media (max-width: 760px) {
+
+    .form,
+    .form__button-submit {
+        width: 100%;
+    }
+
+    .avatar {
+        flex-wrap: wrap;
+        gap: 16px;
+    }
+}
