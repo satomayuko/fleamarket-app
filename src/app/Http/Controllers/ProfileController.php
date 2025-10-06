@@ -8,25 +8,32 @@ use App\Models\Order;
 
 class ProfileController extends Controller
 {
+
     public function show()
     {
-        $user = Auth::user();
-        $profile = $user->profile;
+    $user = Auth::user();
+    $profile = $user->profile;
 
-        $sellingItems = $user->items()
-            ->latest('id')
-            ->get(['id','title','cover_image']);
+    // 出品中（items.name / items.image を title / cover_image 名で返す）
+    $sellingItems = $user->items()
+        ->latest('id')
+        ->get(['id', 'name as title', 'image as cover_image']);
 
-        $purchasedItems = Order::where('buyer_id', $user->id)
-            ->with(['item:id,title,cover_image'])
-            ->latest('id')
-            ->get()
-            ->pluck('item')
-            ->filter()
-            ->values();
+    // 購入品（関連 item 側も同様にエイリアス）
+    $purchasedItems = Order::where('buyer_id', $user->id)
+        ->with([
+            'item' => function ($q) {
+                $q->select('id', 'name as title', 'image as cover_image');
+            }
+        ])
+        ->latest('id')
+        ->get()
+        ->pluck('item')
+        ->filter()
+        ->values();
 
-        return view('profile', compact('user','profile','sellingItems','purchasedItems'));
-    }
+    return view('profile', compact('user','profile','sellingItems','purchasedItems'));
+}
 
     public function edit()
     {

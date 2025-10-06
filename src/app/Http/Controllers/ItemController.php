@@ -16,7 +16,7 @@ class ItemController extends Controller
             $items = Item::latest()->get();
         }
 
-        return view('items.index', compact('items'));
+        return view('index', compact('items'));
     }
 
     public function show(Item $item)

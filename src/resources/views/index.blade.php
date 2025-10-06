@@ -1,48 +1,52 @@
 @extends('layouts.app')
 
 @section('css')
-<link rel="stylesheet" href="{{ asset('css/items.css') }}">
+<link rel="stylesheet" href="{{ asset('css/index.css') }}?v=1">
 @endsection
 
 @section('content')
-<div class="items-index">
+<div class="items-top">
+
+  {{-- タブ（おすすめ / マイリスト） --}}
+  @php
+    $active = request('tab', 'recommend'); // デフォルト: おすすめ
+  @endphp
   <div class="items-tabs">
-    <a href="{{ route('items.index') }}"
-       class="items-tab {{ ($active ?? 'all') === 'all' ? 'is-active' : '' }}">
+    <a href="{{ route('items.index', ['tab' => 'recommend']) }}"
+       class="items-tabs__link {{ $active === 'recommend' ? 'is-active' : '' }}">
       おすすめ
     </a>
 
-    @auth
-      <a href="{{ route('items.index', ['tab' => 'mylist']) }}"
-         class="items-tab {{ ($active ?? '') === 'mylist' ? 'is-active' : '' }}">
-        マイリスト
-      </a>
-    @endauth
+    <a href="{{ route('items.index', ['tab' => 'mylist']) }}"
+       class="items-tabs__link {{ $active === 'mylist' ? 'is-active' : '' }}">
+      マイリスト
+    </a>
   </div>
+  <div class="items-tabs__line"></div>
 
-  @if($items->count())
-    <ul class="items-grid">
-      @foreach($items as $item)
-        <li class="items-card">
-          <a href="{{ route('items.show', $item) }}" class="items-link">
-            <div class="items-thumb">
-              @if($item->cover_image)
-                <img src="{{ asset('storage/'.$item->cover_image) }}" alt="{{ $item->title }}">
-              @else
-                <img src="{{ asset('images/noimage.png') }}" alt="no image">
-              @endif
-            </div>
-            <div class="items-title">{{ $item->title }}</div>
-          </a>
-        </li>
-      @endforeach
-    </ul>
-
-    <div class="items-pagination">
-      {{ $items->links() }}
+  {{-- コンテンツ --}}
+  @if ($active === 'mylist' && auth()->guest())
+    <div class="items-empty">
+      <p>マイリストを表示するにはログインしてください。</p>
+      <a class="items-empty__btn" href="{{ route('login') }}">ログインへ</a>
     </div>
   @else
-    <p class="items-empty">表示できる商品がありません。</p>
+    @if ($items->isEmpty())
+      <div class="items-empty">
+        <p>表示できる商品がありません。</p>
+      </div>
+    @else
+      <div class="items-grid">
+        @foreach ($items as $item)
+          <a class="item-card" href="#">
+            <div class="item-card__thumb">
+              <img src="{{ $item->image }}" alt="{{ $item->name }}">
+            </div>
+            <p class="item-card__name">{{ $item->name }}</p>
+          </a>
+        @endforeach
+      </div>
+    @endif
   @endif
 
 </div>
