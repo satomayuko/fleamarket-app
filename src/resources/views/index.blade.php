@@ -9,14 +9,14 @@
 
   {{-- タブ（おすすめ / マイリスト） --}}
   @php
-    $active = request('tab', 'recommend'); // デフォルト: おすすめ
+    $active = $active ?? request('tab', 'recommend');
   @endphp
+
   <div class="items-tabs">
     <a href="{{ route('items.index', ['tab' => 'recommend']) }}"
        class="items-tabs__link {{ $active === 'recommend' ? 'is-active' : '' }}">
       おすすめ
     </a>
-
     <a href="{{ route('items.index', ['tab' => 'mylist']) }}"
        class="items-tabs__link {{ $active === 'mylist' ? 'is-active' : '' }}">
       マイリスト
@@ -38,13 +38,21 @@
     @else
       <div class="items-grid">
         @foreach ($items as $item)
-          <a class="item-card" href="#">
+          <a class="item-card" href="{{ route('items.show', $item) }}">
             <div class="item-card__thumb">
-              <img src="{{ $item->image }}" alt="{{ $item->name }}">
+              <img src="{{ $item->image_Url }}" alt="{{ $item->name }}">
+              @if ($item->isSold())
+                <span class="item-card__badge">Sold</span>
+              @endif
             </div>
             <p class="item-card__name">{{ $item->name }}</p>
           </a>
         @endforeach
+      </div>
+
+      {{-- ページネーション --}}
+      <div class="pagination">
+        {{ $items->links('pagination::tailwind') }}
       </div>
     @endif
   @endif

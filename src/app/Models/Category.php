@@ -9,10 +9,26 @@ class Category extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['parent_id','name'];
+    protected $fillable = [
+        'parent_id',
+        'name',
+    ];
 
-    public function parent() { return $this->belongsTo(Category::class, 'parent_id'); }
-    public function children() { return $this->hasMany(Category::class, 'parent_id'); }
+    // 親カテゴリ
+    public function parent()
+    {
+        return $this->belongsTo(Category::class, 'parent_id');
+    }
 
-    public function items() { return $this->hasMany(Item::class); }
+    // 子カテゴリ
+    public function children()
+    {
+        return $this->hasMany(Category::class, 'parent_id');
+    }
+
+    // 商品（多対多に修正）
+    public function items()
+    {
+        return $this->belongsToMany(Item::class, 'category_item')->withTimestamps();
+    }
 }
