@@ -263,4 +263,13 @@
         .comment-form--guest a {
             text-decoration: underline;
         }
-}
+                .item-detail__sold-label {
+                    display: inline-block;
+                    background: #999;
+                    color: #fff;
+                    font-weight: 700;
+                    padding: 6px 16px;
+                    border-radius: 4px;
+                    margin-bottom: 12px;
+                }
+            }
