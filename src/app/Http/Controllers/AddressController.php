@@ -14,6 +14,7 @@ class AddressController extends Controller
         if ($item->user_id === Auth::id()) {
             abort(403);
         }
+
         if ($item->isSold()) {
             abort(410);
         }
@@ -52,6 +53,7 @@ class AddressController extends Controller
         if ($item->user_id === Auth::id()) {
             abort(403);
         }
+
         if ($item->isSold()) {
             abort(410);
         }
@@ -72,7 +74,8 @@ class AddressController extends Controller
             ['zip', 'address', 'building', 'updated_at']
         );
 
-        return redirect()->route('orders.confirm', $item)
+        return redirect()
+            ->route('orders.confirm', $item)
             ->with('status', '配送先を更新しました');
     }
 
@@ -83,6 +86,7 @@ class AddressController extends Controller
                 return (string)$model->{$key};
             }
         }
+
         return '';
     }
 

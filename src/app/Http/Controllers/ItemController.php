@@ -12,31 +12,13 @@ class ItemController extends Controller
     public function index(Request $request)
     {
         $tab = $request->query('tab', 'recommend');
-        $keyword = trim((string) $request->query('keyword'));
+        $keyword = $this->resolveKeyword($request);
+        $catId = (int) $request->query('category_id', 0);
+        $categoryIds = $this->resolveCategoryIds($catId);
 
-        if ($tab === 'mylist' && Auth::check()) {
-            $items = Auth::user()
-                ->favoriteItems()
-                ->with('order')
-                ->when($keyword !== '', function ($q) use ($keyword) {
-                    $q->where('items.name', 'like', "%{$keyword}%");
-                })
-                ->latest('items.id')
-                ->paginate(12)
-                ->withQueryString();
-        } else {
-            $items = Item::query()
-                ->with('order')
-                ->when(Auth::check(), function ($q) {
-                    $q->where('user_id', '!=', Auth::id());
-                })
-                ->when($keyword !== '', function ($q) use ($keyword) {
-                    $q->where('name', 'like', "%{$keyword}%");
-                })
-                ->latest('id')
-                ->paginate(12)
-                ->withQueryString();
-        }
+        $items = $tab === 'mylist' && Auth::check()
+            ? $this->mylistQuery($keyword, $categoryIds)->paginate(12)->withQueryString()
+            : $this->itemsQuery($keyword, $categoryIds)->paginate(12)->withQueryString();
 
         return view('index', [
             'items'   => $items,
@@ -67,9 +49,7 @@ class ItemController extends Controller
             ->orderBy('id')
             ->get();
 
-        return view('items.create', [
-            'categories' => $categories,
-        ]);
+        return view('items.create', ['categories' => $categories]);
     }
 
     public function store(Request $request)
@@ -105,5 +85,58 @@ class ItemController extends Controller
         return redirect()
             ->route('items.show', $item)
             ->with('success', '商品を出品しました');
+    }
+
+    private function resolveKeyword(Request $request): string
+    {
+        if ($request->has('keyword')) {
+            session(['search.keyword' => trim((string) $request->query('keyword'))]);
+        }
+
+        return trim((string) session('search.keyword', ''));
+    }
+
+    private function resolveCategoryIds(int $catId): array
+    {
+        if ($catId <= 0) {
+            return [];
+        }
+
+        $cat = Category::with('children:id,parent_id')
+            ->select('id', 'parent_id')
+            ->find($catId);
+
+        if (!$cat) {
+            return [];
+        }
+
+        $ids = $cat->children->pluck('id')->all();
+        $ids[] = $cat->id;
+
+        return $ids;
+    }
+
+    private function mylistQuery(string $keyword, array $categoryIds)
+    {
+        return Auth::user()
+            ->favoriteItems()
+            ->with('order')
+            ->when($keyword !== '', fn($q) => $q->where('items.name', 'like', "%{$keyword}%"))
+            ->when($categoryIds !== [], fn($q) =>
+                $q->whereHas('categories', fn($w) => $w->whereIn('categories.id', $categoryIds))
+            )
+            ->latest('items.id');
+    }
+
+    private function itemsQuery(string $keyword, array $categoryIds)
+    {
+        return Item::query()
+            ->with('order')
+            ->when(Auth::check(), fn($q) => $q->where('user_id', '!=', Auth::id()))
+            ->when($keyword !== '', fn($q) => $q->where('name', 'like', "%{$keyword}%"))
+            ->when($categoryIds !== [], fn($q) =>
+                $q->whereHas('categories', fn($w) => $w->whereIn('categories.id', $categoryIds))
+            )
+            ->latest('id');
     }
 }

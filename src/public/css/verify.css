@@ -19,12 +19,12 @@
     width: 360px;
     height: 56px;
     border-radius: 10px;
-    background: #E6E6E6;
-    border: 1px solid #BFBFBF;
+    background: #e6e6e6;
+    border: 1px solid #bfbfbf;
     color: #111;
     font-weight: 700;
     text-decoration: none;
-    transition: filter .15s ease;
+    transition: filter 0.15s ease;
     margin-bottom: 16px;
 }
 

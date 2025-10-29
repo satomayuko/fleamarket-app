@@ -8,41 +8,39 @@ use App\Models\Order;
 
 class ProfileController extends Controller
 {
-
     public function show()
     {
-    $user = Auth::user();
-    $profile = $user->profile;
+        $user = Auth::user();
+        $profile = $user->profile;
 
-    // 出品中（items.name / items.image を title / cover_image 名で返す）
-    $sellingItems = $user->items()
-        ->latest('id')
-        ->get(['id', 'name as title', 'image as cover_image']);
+        $sellingItems = $user->items()
+            ->latest('id')
+            ->get(['id', 'name as title', 'image as cover_image']);
 
-    // 購入品（関連 item 側も同様にエイリアス）
-    $purchasedItems = Order::where('buyer_id', $user->id)
-        ->with([
-            'item' => function ($q) {
-                $q->select('id', 'name as title', 'image as cover_image');
-            }
-        ])
-        ->latest('id')
-        ->get()
-        ->pluck('item')
-        ->filter()
-        ->values();
+        $purchasedItems = Order::where('buyer_id', $user->id)
+            ->with([
+                'item' => function ($q) {
+                    $q->select('id', 'name as title', 'image as cover_image');
+                }
+            ])
+            ->latest('id')
+            ->get()
+            ->pluck('item')
+            ->filter()
+            ->values();
 
-    return view('profile', compact('user','profile','sellingItems','purchasedItems'));
-}
+        return view('profile', compact('user', 'profile', 'sellingItems', 'purchasedItems'));
+    }
 
     public function edit()
     {
         $user = Auth::user();
+
         $profile = $user->profile ?: $user->profile()->create([
-            'postal_code'  => '',
-            'address'      => '',
-            'building'     => '',
-            'avatar_path'  => null,
+            'postal_code' => '',
+            'address' => '',
+            'building' => '',
+            'avatar_path' => null,
         ]);
 
         return view('profile_edit', compact('profile', 'user'));
@@ -59,17 +57,20 @@ class ProfileController extends Controller
         $profile = $user->profile ?: $user->profile()->create();
 
         $avatarPath = $profile->avatar_path;
+
         if ($request->hasFile('avatar')) {
             $avatarPath = $request->file('avatar')->store('profiles', 'public');
         }
 
         $profile->update([
             'postal_code' => $request->postal,
-            'address'     => $request->address,
-            'building'    => $request->building,
+            'address' => $request->address,
+            'building' => $request->building,
             'avatar_path' => $avatarPath,
         ]);
 
-        return redirect()->route('mypage')->with('status', 'プロフィールを更新しました！');
+        return redirect()
+            ->route('mypage')
+            ->with('status', 'プロフィールを更新しました！');
     }
 }

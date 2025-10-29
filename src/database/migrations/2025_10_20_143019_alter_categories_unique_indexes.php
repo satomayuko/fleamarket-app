@@ -2,28 +2,40 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('categories', function (Blueprint $table) {
-            // 旧: name 単体ユニークが残っているので落とす
-            // インデックス名が 'categories_name_unique' のはず
-            $table->dropUnique('categories_name_unique');
+        $hasSingle = collect(DB::select("SHOW INDEX FROM `categories` WHERE Key_name = 'categories_name_unique'"))->isNotEmpty();
+        if ($hasSingle) {
+            DB::statement("DROP INDEX `categories_name_unique` ON `categories`");
+        }
 
-            // 新: 親別に同名OKにするため複合ユニークを付与
-            $table->unique(['parent_id', 'name'], 'categories_parent_name_unique');
-        });
+        $hasComposite = collect(DB::select("SHOW INDEX FROM `categories` WHERE Key_name = 'categories_parent_id_name_unique'"))->isNotEmpty();
+        if (!$hasComposite) {
+            Schema::table('categories', function (Blueprint $table) {
+                $table->unique(['parent_id', 'name'], 'categories_parent_id_name_unique');
+            });
+        }
     }
 
     public function down(): void
     {
-        Schema::table('categories', function (Blueprint $table) {
-            // 差し戻し: 複合ユニークを外して name 単体ユニークを戻す
-            $table->dropUnique('categories_parent_name_unique');
-            $table->unique('name', 'categories_name_unique');
-        });
+        $hasComposite = collect(DB::select("SHOW INDEX FROM `categories` WHERE Key_name = 'categories_parent_id_name_unique'"))->isNotEmpty();
+        if ($hasComposite) {
+            Schema::table('categories', function (Blueprint $table) {
+                $table->dropUnique('categories_parent_id_name_unique');
+            });
+        }
+
+        $hasSingle = collect(DB::select("SHOW INDEX FROM `categories` WHERE Key_name = 'categories_name_unique'"))->isNotEmpty();
+        if (!$hasSingle) {
+            Schema::table('categories', function (Blueprint $table) {
+                $table->unique('name', 'categories_name_unique');
+            });
+        }
     }
 };

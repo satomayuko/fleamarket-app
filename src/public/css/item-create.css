@@ -84,17 +84,14 @@
     margin-bottom: 10px;
 }
 
-/* 行を中央寄せ（任意：Figma通り） */
 .chips {
     display: flex;
     flex-wrap: wrap;
     gap: 16px 18px;
     justify-content: flex-start;
-        /* ←追加（左寄せ） */
     align-content: flex-start;
 }
 
-/* 入力は見せない（でもフォーカス可・アクセシブル） */
 .chip-input {
     position: absolute;
     width: 1px;
@@ -107,7 +104,6 @@
     border: 0;
 }
 
-/* 見た目のチップはラベル */
 .chip {
     display: inline-flex;
     align-items: center;
@@ -126,7 +122,6 @@
     color: #FF5655;
 }
 
-/* チェック時に色反転 */
 .chip-input:checked+.chip {
     background: #FF5655;
     border-color: #FF5655;
@@ -136,13 +131,11 @@
     color: #fff;
 }
 
-/* キーボード操作のフォーカス見やすく */
 .chip-input:focus+.chip {
     outline: 2px solid rgba(255, 85, 85, .4);
     outline-offset: 2px;
 }
 
-/* ホバー時の軽いフィードバック */
 .chip:hover {
     background: rgba(255, 86, 85, .08);
 }
@@ -272,7 +265,18 @@
     padding: 0;
     margin: -1px;
     overflow: hidden;
-    clip: rect(0, 0, 0, 0);
+    clip: rect(0 0 0 0);
     white-space: nowrap;
     border: 0;
+}
+
+.chip {
+    color: #ff4d4d;
+    border-color: #ff4d4d;
+}
+
+.chip-input:checked+.chip {
+    background-color: #ff5555;
+    color: #fff;
+    border-color: #ff5555;
 }

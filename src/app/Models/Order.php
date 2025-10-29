@@ -9,12 +9,21 @@ class Order extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['item_id','buyer_id','price_at_purchase','status'];
+    protected $fillable = [
+        'item_id',
+        'buyer_id',
+        'shipping_address_id',
+        'price_at_purchase',
+        'status',
+    ];
 
-   public function item()
-{
-    return $this->belongsTo(\App\Models\Item::class);
-}
+    public function item()
+    {
+        return $this->belongsTo(Item::class);
+    }
 
-    public function buyer() { return $this->belongsTo(User::class, 'buyer_id'); }
+    public function buyer()
+    {
+        return $this->belongsTo(User::class, 'buyer_id');
+    }
 }

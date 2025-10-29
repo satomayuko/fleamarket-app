@@ -94,9 +94,22 @@ class OrderController extends Controller
     {
         if (!$item->isSold()) {
             $item->update(['status' => 'sold']);
-            Order::firstOrCreate(
+
+            $address = DB::table('item_addresses')
+                ->where('user_id', Auth::id())
+                ->orderByDesc('id')
+                ->first();
+
+            $shippingAddressId = $address->id ?? null;
+
+            Order::updateOrCreate(
                 ['item_id' => $item->id],
-                ['buyer_id' => Auth::id(), 'price_at_purchase' => $item->price, 'status' => 'paid']
+                [
+                    'buyer_id' => Auth::id(),
+                    'shipping_address_id' => $shippingAddressId,
+                    'price_at_purchase' => $item->price,
+                    'status' => 'paid',
+                ]
             );
         }
 
@@ -110,6 +123,7 @@ class OrderController extends Controller
                 return (string)$model->{$key};
             }
         }
+
         return '';
     }
 

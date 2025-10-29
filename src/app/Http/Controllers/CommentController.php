@@ -9,7 +9,6 @@ use App\Models\Item;
 
 class CommentController extends Controller
 {
-    // コメント投稿処理
     public function store(Request $request, Item $item)
     {
         $validated = $request->validate([
@@ -19,10 +18,11 @@ class CommentController extends Controller
         Comment::create([
             'user_id' => Auth::id(),
             'item_id' => $item->id,
-            'body'    => $request->comment,
+            'body'    => $validated['comment'],
         ]);
 
-        return redirect()->route('items.show', $item)
+        return redirect()
+            ->route('items.show', $item)
             ->with('success', 'コメントを投稿しました');
     }
 }

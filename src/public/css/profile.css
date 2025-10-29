@@ -17,7 +17,7 @@
     height: 150px;
     border-radius: 50%;
     overflow: hidden;
-    background: #D9D9D9;
+    background: #d9d9d9;
 }
 
 .user-info__avatar img {
@@ -37,15 +37,19 @@
     justify-content: center;
     width: 310px;
     height: 59px;
-    border: 2px solid #FF5555;
+    border: 2px solid #ff5555;
     border-radius: 10px;
-    background: #FF5555;
+    background: #ff5555;
     color: #fff;
     font-weight: 700;
     text-decoration: none;
+    transition: opacity 0.2s ease;
 }
 
-/* tabs */
+.user-info__edit:hover {
+    opacity: 0.9;
+}
+
 .profile-tabs {
     position: relative;
     display: flex;
@@ -56,12 +60,12 @@
 .profile-tabs .tab {
     font-weight: 700;
     font-size: 24px;
-    color: #5F5F5F;
+    color: #5f5f5f;
     text-decoration: none;
 }
 
 .profile-tabs .tab.is-active {
-    color: #FF0000;
+    color: #ff0000;
 }
 
 .profile-tabs::after {
@@ -70,10 +74,9 @@
     left: 0;
     right: 0;
     bottom: -12px;
-    border-bottom: 2px solid #5F5F5F;
+    border-bottom: 2px solid #5f5f5f;
 }
 
-/* products grid */
 .products-grid {
     margin-top: 40px;
     display: grid;
@@ -92,9 +95,9 @@
 .product-image {
     width: 290px;
     height: 320px;
-    background: #D9D9D9;
+    background: #d9d9d9;
     border-radius: 4px;
-    box-shadow: 0 4px 4px rgba(0, 0, 0, .25);
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -117,6 +120,12 @@
 .product-name {
     margin-top: 8px;
     font-size: 18px;
+    font-weight: 500;
+    color: #000;
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 @media (max-width: 1280px) {
@@ -138,6 +147,7 @@
 
     .products-grid {
         grid-template-columns: repeat(2, 290px);
+        justify-content: space-around;
     }
 }
 

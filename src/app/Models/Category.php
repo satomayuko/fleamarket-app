@@ -14,21 +14,19 @@ class Category extends Model
         'name',
     ];
 
-    // 親カテゴリ
     public function parent()
     {
         return $this->belongsTo(Category::class, 'parent_id');
     }
 
-    // 子カテゴリ
     public function children()
     {
         return $this->hasMany(Category::class, 'parent_id');
     }
 
-    // 商品（多対多に修正）
     public function items()
     {
-        return $this->belongsToMany(Item::class, 'category_item')->withTimestamps();
+        return $this->belongsToMany(Item::class, 'category_item')
+            ->withTimestamps();
     }
 }

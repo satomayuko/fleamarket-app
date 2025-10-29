@@ -19,45 +19,40 @@ class Item extends Model
         'shipping_fee_burden',
         'status',
         'image',
-        'published_at'
+        'published_at',
     ];
 
     protected $casts = [
-        'price'        => 'integer',
+        'price' => 'integer',
         'published_at' => 'datetime',
     ];
 
-    // 出品者
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    // カテゴリ（単一 → 複数に修正）
     public function categories()
     {
-        return $this->belongsToMany(Category::class, 'category_item')->withTimestamps();
+        return $this->belongsToMany(Category::class, 'category_item', 'item_id', 'category_id')
+            ->withTimestamps();
     }
 
-    // コメント
     public function comments()
     {
         return $this->hasMany(Comment::class);
     }
 
-    // 注文（1対1）
     public function order()
     {
         return $this->hasOne(Order::class);
     }
 
-    // いいね（多対多）
     public function favoredByUsers()
     {
         return $this->belongsToMany(User::class, 'favorites')->withTimestamps();
     }
 
-    // 画像URL
     public function getImageUrlAttribute(): string
     {
         if (!$this->image) {
@@ -71,7 +66,6 @@ class Item extends Model
         return asset('storage/' . $this->image);
     }
 
-    // 購入済み判定
     public function isSold(): bool
     {
         if ($this->relationLoaded('order')) {
@@ -81,13 +75,11 @@ class Item extends Model
         return $this->order()->exists() || $this->status === 'sold';
     }
 
-    // いいね数
     public function getFavoritesCountAttribute(): int
     {
         return $this->favoredByUsers()->count();
     }
 
-    // コメント数
     public function getCommentsCountAttribute(): int
     {
         return $this->comments()->count();
