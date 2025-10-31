@@ -2,11 +2,11 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
-use App\Models\User;
 use App\Models\Item;
-use Illuminate\Support\Facades\DB;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
+use Tests\TestCase;
 
 class OrderAddressTest extends TestCase
 {
@@ -16,26 +16,26 @@ class OrderAddressTest extends TestCase
     public function 購入後に住所が注文に紐づいて登録される()
     {
         $seller = User::factory()->create();
-        $buyer  = User::factory()->create();
+        $buyer = User::factory()->create();
 
         $item = Item::create([
-            'user_id'   => $seller->id,
-            'name'      => 'テスト商品',
+            'user_id' => $seller->id,
+            'name' => 'テスト商品',
             'description' => '説明',
-            'price'     => 1500,
-            'image'     => 'items/dummy.jpg',
-            'brand'     => null,
+            'price' => 1500,
+            'image' => 'items/dummy.jpg',
+            'brand' => null,
             'condition' => '新品',
-            'status'    => 'selling',
+            'status' => 'selling',
             'published_at' => now(),
         ]);
 
         $addrId = DB::table('item_addresses')->insertGetId([
-            'item_id'    => $item->id,
-            'user_id'    => $buyer->id,
-            'zip'        => '123-4567',
-            'address'    => '東京都渋谷区神南1-2-3',
-            'building'   => null,
+            'item_id' => $item->id,
+            'user_id' => $buyer->id,
+            'zip' => '123-4567',
+            'address' => '東京都渋谷区神南1-2-3',
+            'building' => null,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -45,14 +45,14 @@ class OrderAddressTest extends TestCase
             ->assertRedirect(route('items.index'));
 
         $this->assertDatabaseHas('orders', [
-            'item_id'             => $item->id,
-            'buyer_id'            => $buyer->id,
+            'item_id' => $item->id,
+            'buyer_id' => $buyer->id,
             'shipping_address_id' => $addrId,
-            'status'              => 'paid',
+            'status' => 'paid',
         ]);
 
         $this->assertDatabaseHas('items', [
-            'id'     => $item->id,
+            'id' => $item->id,
             'status' => 'sold',
         ]);
     }

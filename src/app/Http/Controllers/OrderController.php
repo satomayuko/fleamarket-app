@@ -1,26 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
+use App\Http\Requests\PurchaseRequest;
 use App\Models\Item;
 use App\Models\Order;
-use Illuminate\Http\Request;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Stripe\Stripe;
 use Stripe\Checkout\Session;
+use Stripe\Stripe;
 
 class OrderController extends Controller
 {
-    public function confirm(Item $item)
+    public function confirm(Item $item): View
     {
-        if ($item->user_id === Auth::id()) {
-            abort(403);
-        }
-
-        if ($item->isSold()) {
-            abort(410);
-        }
+        $this->assertPurchasable($item);
 
         $user = Auth::user();
 
@@ -38,13 +36,14 @@ class OrderController extends Controller
         $overridden = DB::table('item_addresses')
             ->where('item_id', $item->id)
             ->where('user_id', Auth::id())
+            ->latest('id')
             ->first();
 
         if ($overridden) {
-            $line = trim((string)($overridden->address ?? '') . ' ' . (string)($overridden->building ?? ''));
+            $line = trim((string) ($overridden->address ?? '').' '.(string) ($overridden->building ?? ''));
             $defaultAddress = [
-                'zip'  => (string)($overridden->zip ?? ''),
-                'line' => trim($line),
+                'zip' => (string) ($overridden->zip ?? ''),
+                'line' => $line,
             ];
         }
 
@@ -54,21 +53,13 @@ class OrderController extends Controller
         ]);
     }
 
-    public function checkout(Item $item, Request $request)
+    public function checkout(Item $item, PurchaseRequest $request): RedirectResponse
     {
-        if ($item->user_id === Auth::id()) {
-            abort(403);
-        }
+        $this->assertPurchasable($item);
 
-        if ($item->isSold()) {
-            abort(410);
-        }
+        $data = $request->validated();
 
-        $data = $request->validate([
-            'payment_method' => ['required', 'in:convenience,card'],
-        ]);
-
-        Stripe::setApiKey(config('services.stripe.secret'));
+        Stripe::setApiKey((string) config('services.stripe.secret'));
 
         $session = Session::create([
             'payment_method_types' => [
@@ -78,7 +69,7 @@ class OrderController extends Controller
                 'price_data' => [
                     'currency' => 'jpy',
                     'product_data' => ['name' => $item->name],
-                    'unit_amount' => (int)$item->price,
+                    'unit_amount' => (int) $item->price,
                 ],
                 'quantity' => 1,
             ]],
@@ -87,17 +78,18 @@ class OrderController extends Controller
             'cancel_url' => route('orders.confirm', $item),
         ]);
 
-        return redirect($session->url);
+        return redirect((string) $session->url);
     }
 
-    public function success(Item $item)
+    public function success(Item $item): RedirectResponse
     {
-        if (!$item->isSold()) {
+        if (! $item->isSold()) {
             $item->update(['status' => 'sold']);
 
             $address = DB::table('item_addresses')
+                ->where('item_id', $item->id)
                 ->where('user_id', Auth::id())
-                ->orderByDesc('id')
+                ->latest('id')
                 ->first();
 
             $shippingAddressId = $address->id ?? null;
@@ -116,11 +108,23 @@ class OrderController extends Controller
         return redirect()->route('items.index')->with('status', '購入が完了しました。');
     }
 
-    private function firstFilled($model, array $keys): string
+    private function assertPurchasable(Item $item): void
+    {
+        if ($item->user_id === Auth::id()) {
+            abort(403);
+        }
+
+        if ($item->isSold()) {
+            abort(410);
+        }
+    }
+
+    private function firstFilled(object $model, array $keys): string
     {
         foreach ($keys as $key) {
-            if (isset($model->{$key}) && $model->{$key} !== '') {
-                return (string)$model->{$key};
+            $v = $model->{$key} ?? '';
+            if ($v !== '' && $v !== null) {
+                return (string) $v;
             }
         }
 
@@ -129,6 +133,8 @@ class OrderController extends Controller
 
     private function joinFilled(string $glue, array $parts): string
     {
-        return implode($glue, array_values(array_filter($parts, fn($v) => $v !== '' && $v !== null)));
+        $filtered = array_values(array_filter($parts, fn ($v) => $v !== '' && $v !== null));
+
+        return implode($glue, $filtered);
     }
 }

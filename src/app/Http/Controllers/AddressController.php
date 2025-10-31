@@ -25,9 +25,9 @@ class AddressController extends Controller
             ->first();
 
         if ($saved) {
-            $zip = (string)($saved->zip ?? '');
-            $address = (string)($saved->address ?? '');
-            $building = (string)($saved->building ?? '');
+            $zip = (string) ($saved->zip ?? '');
+            $address = (string) ($saved->address ?? '');
+            $building = (string) ($saved->building ?? '');
         } else {
             $user = Auth::user();
             $zip = $this->firstFilled($user, ['zip', 'zipcode', 'postal_code', 'postcode']);
@@ -41,9 +41,9 @@ class AddressController extends Controller
         }
 
         return view('orders.address', [
-            'item'     => $item,
-            'zip'      => $zip,
-            'address'  => $address,
+            'item' => $item,
+            'zip' => $zip,
+            'address' => $address,
             'building' => $building,
         ]);
     }
@@ -62,11 +62,11 @@ class AddressController extends Controller
 
         DB::table('item_addresses')->upsert(
             [[
-                'item_id'    => $item->id,
-                'user_id'    => Auth::id(),
-                'zip'        => $request->zip,
-                'address'    => $request->address,
-                'building'   => $request->building,
+                'item_id' => $item->id,
+                'user_id' => Auth::id(),
+                'zip' => $request->zip,
+                'address' => $request->address,
+                'building' => $request->building,
                 'created_at' => $now,
                 'updated_at' => $now,
             ]],
@@ -83,7 +83,7 @@ class AddressController extends Controller
     {
         foreach ($keys as $key) {
             if (isset($model->{$key}) && $model->{$key} !== '') {
-                return (string)$model->{$key};
+                return (string) $model->{$key};
             }
         }
 
@@ -92,6 +92,6 @@ class AddressController extends Controller
 
     private function joinFilled(string $glue, array $parts): string
     {
-        return implode($glue, array_values(array_filter($parts, fn($v) => $v !== '' && $v !== null)));
+        return implode($glue, array_values(array_filter($parts, fn ($v) => $v !== '' && $v !== null)));
     }
 }

@@ -4,13 +4,14 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateItemsTable extends Migration
+return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('items', function (Blueprint $table) {
+        Schema::create('items', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+
             $table->string('name', 255);
             $table->text('description')->nullable();
             $table->unsignedInteger('price');
@@ -20,8 +21,8 @@ class CreateItemsTable extends Migration
             $table->string('image')->nullable();
             $table->string('brand', 100)->nullable();
             $table->timestamp('published_at')->nullable();
-            $table->timestamps();
 
+            $table->timestamps();
             $table->index(['status', 'published_at']);
         });
     }
@@ -30,4 +31,4 @@ class CreateItemsTable extends Migration
     {
         Schema::dropIfExists('items');
     }
-}
+};

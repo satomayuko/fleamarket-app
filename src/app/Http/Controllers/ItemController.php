@@ -1,15 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
-use App\Models\Item;
+use App\Http\Requests\ExhibitionRequest;
 use App\Models\Category;
+use App\Models\Item;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class ItemController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request): View
     {
         $tab = $request->query('tab', 'recommend');
         $keyword = $this->resolveKeyword($request);
@@ -21,13 +26,34 @@ class ItemController extends Controller
             : $this->itemsQuery($keyword, $categoryIds)->paginate(12)->withQueryString();
 
         return view('index', [
-            'items'   => $items,
-            'active'  => $tab,
+            'items' => $items,
+            'active' => $tab,
             'keyword' => $keyword,
         ]);
     }
 
-    public function show(Item $item)
+    public function indexMyList(Request $request): View
+    {
+        if (! Auth::check()) {
+            abort(403);
+        }
+
+        $keyword = $this->resolveKeyword($request);
+        $catId = (int) $request->query('category_id', 0);
+        $categoryIds = $this->resolveCategoryIds($catId);
+
+        $items = $this->mylistQuery($keyword, $categoryIds)
+            ->paginate(12)
+            ->withQueryString();
+
+        return view('index', [
+            'items' => $items,
+            'active' => 'mylist',
+            'keyword' => $keyword,
+        ]);
+    }
+
+    public function show(Item $item): View
     {
         $item->load([
             'categories.parent',
@@ -42,7 +68,7 @@ class ItemController extends Controller
         return view('items.show', compact('item'));
     }
 
-    public function create()
+    public function create(): View
     {
         $categories = Category::with('children')
             ->whereNull('parent_id')
@@ -52,35 +78,26 @@ class ItemController extends Controller
         return view('items.create', ['categories' => $categories]);
     }
 
-    public function store(Request $request)
+    public function store(ExhibitionRequest $request): RedirectResponse
     {
-        $request->validate([
-            'name'         => ['required', 'string', 'max:255'],
-            'description'  => ['required', 'string', 'max:255'],
-            'price'        => ['required', 'integer', 'min:1'],
-            'image'        => ['required', 'image', 'mimes:jpeg,jpg,png'],
-            'brand'        => ['nullable', 'string', 'max:255'],
-            'condition'    => ['required', 'in:新品,未使用に近い,目立った傷や汚れなし,やや傷や汚れあり,傷や汚れあり'],
-            'categories'   => ['required', 'array', 'min:1'],
-            'categories.*' => ['integer', 'exists:categories,id'],
-        ]);
+        $validated = $request->validated();
 
         $path = $request->file('image')->store('items', 'public');
 
         $item = Item::create([
-            'user_id'             => Auth::id(),
-            'name'                => $request->name,
-            'description'         => $request->description,
-            'price'               => $request->price,
-            'image'               => $path,
-            'brand'               => $request->brand,
-            'condition'           => $request->condition,
+            'user_id' => Auth::id(),
+            'name' => $validated['name'],
+            'description' => $validated['description'],
+            'price' => $validated['price'],
+            'image' => $path,
+            'brand' => $validated['brand'] ?? null,
+            'condition' => $validated['condition'],
             'shipping_fee_burden' => 'seller',
-            'status'              => 'selling',
-            'published_at'        => now(),
+            'status' => 'selling',
+            'published_at' => now(),
         ]);
 
-        $item->categories()->sync($request->input('categories'));
+        $item->categories()->sync($validated['categories']);
 
         return redirect()
             ->route('items.show', $item)
@@ -106,7 +123,7 @@ class ItemController extends Controller
             ->select('id', 'parent_id')
             ->find($catId);
 
-        if (!$cat) {
+        if (! $cat) {
             return [];
         }
 
@@ -120,23 +137,19 @@ class ItemController extends Controller
     {
         return Auth::user()
             ->favoriteItems()
-            ->with('order')
-            ->when($keyword !== '', fn($q) => $q->where('items.name', 'like', "%{$keyword}%"))
-            ->when($categoryIds !== [], fn($q) =>
-                $q->whereHas('categories', fn($w) => $w->whereIn('categories.id', $categoryIds))
-            )
+            ->with(['order', 'categories'])
+            ->when($keyword !== '', fn ($q) => $q->where('items.name', 'like', "%{$keyword}%"))
+            ->when($categoryIds !== [], fn ($q) => $q->whereHas('categories', fn ($w) => $w->whereIn('categories.id', $categoryIds)))
             ->latest('items.id');
     }
 
     private function itemsQuery(string $keyword, array $categoryIds)
     {
         return Item::query()
-            ->with('order')
-            ->when(Auth::check(), fn($q) => $q->where('user_id', '!=', Auth::id()))
-            ->when($keyword !== '', fn($q) => $q->where('name', 'like', "%{$keyword}%"))
-            ->when($categoryIds !== [], fn($q) =>
-                $q->whereHas('categories', fn($w) => $w->whereIn('categories.id', $categoryIds))
-            )
+            ->with(['order', 'categories'])
+            ->when(Auth::check(), fn ($q) => $q->where('user_id', '!=', Auth::id()))
+            ->when($keyword !== '', fn ($q) => $q->where('name', 'like', "%{$keyword}%"))
+            ->when($categoryIds !== [], fn ($q) => $q->whereHas('categories', fn ($w) => $w->whereIn('categories.id', $categoryIds)))
             ->latest('id');
     }
 }

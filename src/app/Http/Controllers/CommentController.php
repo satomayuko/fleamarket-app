@@ -2,23 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\CommentRequest;
 use App\Models\Comment;
 use App\Models\Item;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Auth;
 
 class CommentController extends Controller
 {
-    public function store(Request $request, Item $item)
+    public function store(CommentRequest $request, Item $item): RedirectResponse
     {
-        $validated = $request->validate([
-            'comment' => ['required', 'string', 'max:255'],
-        ]);
+        $data = $request->validated();
 
         Comment::create([
             'user_id' => Auth::id(),
             'item_id' => $item->id,
-            'body'    => $validated['comment'],
+            'body' => $data['comment'],
         ]);
 
         return redirect()

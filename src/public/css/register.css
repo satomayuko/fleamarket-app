@@ -49,6 +49,7 @@
     font-family: 'Inter', sans-serif;
     appearance: none;
     box-sizing: border-box;
+    background: #fff;
 }
 
 .form__button {
@@ -93,4 +94,63 @@
 .login__button-submit:hover {
     color: #005fa3;
     text-decoration: underline;
+}
+
+@media (min-width: 1400px) and (max-width: 1540px) {
+    .register-form__content {
+        max-width: 760px;
+        padding: 36px 20px;
+    }
+
+    .register-form__heading {
+        font-size: 28px;
+        margin-bottom: 34px;
+    }
+
+    .form__group-title {
+        font-size: 15px;
+    }
+
+    .form__input--text input {
+        height: 52px;
+        font-size: 16px;
+    }
+
+    .form__error {
+        height: 20px;
+        font-size: 13px;
+    }
+
+    .form__button-submit {
+        height: 64px;
+        font-size: 24px;
+    }
+
+    .login__button-submit {
+        font-size: 21px;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 850px) {
+    .register-form__content {
+        max-width: 92%;
+        padding: 28px 16px;
+    }
+
+    .register-form__heading {
+        font-size: 26px;
+        margin-bottom: 28px;
+        white-space: nowrap;
+    }
+
+    .form__input--text input {
+        height: 50px;
+        font-size: 15px;
+    }
+
+    .form__button-submit {
+        height: 58px;
+        font-size: 22px;
+        width: 100%;
+    }
 }

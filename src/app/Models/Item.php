@@ -55,7 +55,7 @@ class Item extends Model
 
     public function getImageUrlAttribute(): string
     {
-        if (!$this->image) {
+        if (! $this->image) {
             return asset('images/placeholder-290.png');
         }
 
@@ -63,13 +63,13 @@ class Item extends Model
             return $this->image;
         }
 
-        return asset('storage/' . $this->image);
+        return asset('storage/'.$this->image);
     }
 
     public function isSold(): bool
     {
         if ($this->relationLoaded('order')) {
-            return !is_null($this->order) || $this->status === 'sold';
+            return ! is_null($this->order) || $this->status === 'sold';
         }
 
         return $this->order()->exists() || $this->status === 'sold';

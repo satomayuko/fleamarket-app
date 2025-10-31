@@ -16,8 +16,8 @@ class CreateNewUser implements CreatesNewUsers
         Validator::make($input, $req->rules(), $req->messages(), $req->attributes())->validate();
 
         return User::create([
-            'name'     => $input['name'],
-            'email'    => $input['email'],
+            'name' => $input['name'],
+            'email' => $input['email'],
             'password' => Hash::make($input['password']),
         ]);
     }

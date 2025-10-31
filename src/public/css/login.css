@@ -8,7 +8,7 @@
     margin-bottom: 40px;
     text-align: center;
     font-size: 26px;
-    font-weight: bold;
+    font-weight: 700;
 }
 
 .form {
@@ -24,7 +24,7 @@
 
 .form__group-title {
     font-size: 16px;
-    font-weight: bold;
+    font-weight: 700;
     margin-bottom: 5px;
 }
 
@@ -45,6 +45,7 @@
     font-size: 16px;
     appearance: none;
     box-sizing: border-box;
+    background: #fff;
 }
 
 .form__button {
@@ -61,11 +62,11 @@
     font-size: 26px;
     font-weight: 700;
     cursor: pointer;
-    transition: 0.3s;
+    transition: opacity .3s ease, background .3s ease;
 }
 
 .form__button-submit:hover {
-    opacity: 0.9;
+    opacity: .9;
 }
 
 .register__link {
@@ -78,9 +79,65 @@
     font-weight: 400;
     color: #0073CC;
     text-decoration: none;
-    transition: 0.3s;
+    transition: color .2s ease;
 }
 
 .register__button-submit:hover {
     text-decoration: underline;
+    color: #005fa3;
+}
+
+@media (min-width: 1400px) and (max-width: 1540px) {
+    .login-form__content {
+        max-width: 760px;
+        padding: 36px 20px;
+    }
+
+    .login-form__heading {
+        font-size: 28px;
+        margin-bottom: 44px;
+        white-space: nowrap;
+    }
+
+    .form__group-title {
+        font-size: 17px;
+    }
+
+    .form__input--text input {
+        height: 54px;
+        font-size: 18px;
+    }
+
+    .form__button-submit {
+        height: 64px;
+        font-size: 24px;
+    }
+
+    .register__button-submit {
+        font-size: 21px;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 850px) {
+    .login-form__content {
+        max-width: 92%;
+        padding: 28px 16px;
+    }
+
+    .login-form__heading {
+        font-size: 26px;
+        margin-bottom: 36px;
+        white-space: nowrap;
+    }
+
+    .form__input--text input {
+        height: 52px;
+        font-size: 16px;
+    }
+
+    .form__button-submit {
+        width: 100%;
+        height: 58px;
+        font-size: 22px;
+    }
 }

@@ -2,10 +2,10 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use App\Models\User;
 use App\Models\Category;
 use App\Models\Item;
+use App\Models\User;
+use Illuminate\Database\Seeder;
 
 class ItemSeeder extends Seeder
 {
@@ -36,19 +36,19 @@ class ItemSeeder extends Seeder
         ];
 
         foreach ($rows as [$name, $price, $brand, $desc, $image, $condition]) {
-            $descWithBrand = $desc . ($brand && $brand !== 'なし' ? "（ブランド: {$brand}）" : '');
+            $descWithBrand = $desc.($brand && $brand !== 'なし' ? "（ブランド: {$brand}）" : '');
 
             $item = Item::updateOrCreate(
                 ['user_id' => $user->id, 'name' => $name],
                 [
-                    'description'         => $descWithBrand,
-                    'price'               => (int) $price,
-                    'condition'           => $condition,
-                    'image'               => $image,
-                    'brand'               => $brand && $brand !== 'なし' ? $brand : null,
+                    'description' => $descWithBrand,
+                    'price' => (int) $price,
+                    'condition' => $condition,
+                    'image' => $image,
+                    'brand' => $brand && $brand !== 'なし' ? $brand : null,
                     'shipping_fee_burden' => 'seller',
-                    'status'              => 'selling',
-                    'published_at'        => now(),
+                    'status' => 'selling',
+                    'published_at' => now(),
                 ]
             );
 

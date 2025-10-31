@@ -8,14 +8,12 @@ class DatabaseSeeder extends Seeder
 {
     /**
      * Seed the application's database.
-     *
-     * @return void
      */
     public function run(): void
     {
         $this->call([
             CategorySeeder::class,
             ItemSeeder::class,
-        ]);// \App\Models\User::factory(10)->create();
+        ]); // \App\Models\User::factory(10)->create();
     }
 }

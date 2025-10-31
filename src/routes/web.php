@@ -1,16 +1,21 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use Illuminate\Http\Request;
-use Illuminate\Foundation\Auth\EmailVerificationRequest;
-use App\Http\Controllers\ItemController;
-use App\Http\Controllers\FavoriteController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\CommentController;
-use App\Http\Controllers\OrderController;
 use App\Http\Controllers\AddressController;
+use App\Http\Controllers\CommentController;
+use App\Http\Controllers\FavoriteController;
+use App\Http\Controllers\ItemController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\ProfileController;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', [ItemController::class, 'index'])->name('items.index');
+
+Route::get('/items/mylist', [ItemController::class, 'indexMyList'])
+    ->name('items.mylist')
+    ->middleware('auth');
+
 Route::get('/items/{item}', [ItemController::class, 'show'])->name('items.show');
 
 Route::get('/email/verify', function () {
@@ -19,16 +24,19 @@ Route::get('/email/verify', function () {
 
 Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
     $request->fulfill();
+
     return redirect()->route('mypage.profile.edit');
 })->middleware(['auth', 'signed'])->name('verification.verify');
 
 Route::post('/email/verification-notification', function (Request $request) {
     $request->user()->sendEmailVerificationNotification();
+
     return back()->with('status', 'verification-link-sent');
 })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/sell', [ItemController::class, 'create'])->name('items.create');
+
     Route::post('/items', [ItemController::class, 'store'])->name('items.store');
 
     Route::post('/items/{item}/like', [FavoriteController::class, 'store'])->name('items.like');

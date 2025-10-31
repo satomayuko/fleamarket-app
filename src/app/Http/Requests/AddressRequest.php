@@ -14,7 +14,7 @@ class AddressRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'zip'     => ['required', 'string', 'regex:/^\d{3}-\d{4}$/', 'size:8'],
+            'zip' => ['required', 'string', 'regex:/^\d{3}-\d{4}$/', 'size:8'],
             'address' => ['required', 'string', 'max:255'],
         ];
     }
@@ -22,7 +22,7 @@ class AddressRequest extends FormRequest
     public function attributes(): array
     {
         return [
-            'zip'     => '郵便番号',
+            'zip' => '郵便番号',
             'address' => '住所',
         ];
     }

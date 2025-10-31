@@ -15,3 +15,6 @@ yarn-error.log
 /.vscode
 docker/mysql/data
 src/.env.testing
+
+.DS_Store
+**/.DS_Store
