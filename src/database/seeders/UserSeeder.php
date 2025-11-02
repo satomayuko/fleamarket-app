@@ -10,23 +10,13 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        // $this->call(UserSeeder::class);
         User::updateOrCreate(
-            ['email' => 'seller@example.com'],
+            ['email' => 'test@example.com'],
             [
-                'name' => '出品太郎',
-                'password' => Hash::make('password'),
+                'name' => 'テストユーザー',
+                'password' => Hash::make('12345678'),
+                'email_verified_at' => now(),
             ]
         );
-
-        User::updateOrCreate(
-            ['email' => 'buyer@example.com'],
-            [
-                'name' => '購入花子',
-                'password' => Hash::make('password'),
-            ]
-        );
-
-        User::factory()->count(8)->create();
     }
 }
