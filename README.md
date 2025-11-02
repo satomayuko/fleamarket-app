@@ -63,8 +63,8 @@ php artisan db:seed
 - ユーザー登録: http://localhost/register
 - phpMyAdmin: http://localhost:8080
 
-## 👤 ログイン情報（例）
+## 👤 ログイン情報
 一般ユーザー
-ユーザー名: テストユーザー
-email: test@example.com
-password: 12345678
+- ユーザー名: テストユーザー
+- email: test@example.com
+- password: 12345678
