@@ -30,3 +30,4 @@ yarn-error.log
 
 # env (test)
 src/.env.testing
+fleamarket-app-test/
