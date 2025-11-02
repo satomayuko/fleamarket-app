@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use Database\Seeders\ItemSeeder;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -14,6 +15,6 @@ class DatabaseSeeder extends Seeder
         $this->call([
             CategorySeeder::class,
             ItemSeeder::class,
-        ]); // \App\Models\User::factory(10)->create();
+        ]);
     }
 }

@@ -60,9 +60,11 @@
                         @endforeach
                     </div>
 
-                    <div class="pagination">
-                        {{ $items->links('pagination::tailwind') }}
-                    </div>
+                    @if ($items->hasPages())
+                        <nav class="pagination" role="navigation" aria-label="ページネーション">
+                            {{ $items->links('pagination::tailwind') }}
+                        </nav>
+                    @endif
                 @endif
             @endguest
         @else
@@ -90,9 +92,11 @@
                     @endforeach
                 </div>
 
-                <div class="pagination">
-                    {{ $items->links('pagination::tailwind') }}
-                </div>
+                @if ($items->hasPages())
+                    <nav class="pagination" role="navigation" aria-label="ページネーション">
+                        {{ $items->links('pagination::default') }}
+                    </nav>
+                @endif
             @endif
         @endif
     </div>

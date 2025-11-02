@@ -1,5 +1,5 @@
-# laravel-docker-template
 # フリマアプリ
+本アプリは、Laravelを用いて開発した模擬フリマアプリです。
 
 ## 📦環境構築
 
@@ -30,18 +30,20 @@ DB_DATABASE=laravel_db
 DB_USERNAME=laravel_user
 DB_PASSWORD=laravel_pass
 ```
+
+### アプリケーションキーの生成
+アプリケーションキーを生成し .env に自動設定します：
+```
+docker-compose exec php bash
+php artisan key:generate
+```
+
 ### データベースマイグレーション（Migration）
 下記コマンドでマイグレーション、シーディングを実行します
 ```
 docker-compose exec php bash
 php artisan migrate
 php artisan db:seed
-```
-### アプリケーションキーの生成
-アプリケーションキーを生成し .env に自動設定します：
-```
-docker-compose exec php bash
-php artisan key:generate
 ```
 
 ## 🔧 使用技術(実行環境)
@@ -54,9 +56,15 @@ php artisan key:generate
 - **nginx** 1.21.1
 
 ## 🗺 ER図
-![ER図]()
+![ER図](./ERD.png)
 
 ## 🌐URL
 - 開発環境: http://localhost/
 - ユーザー登録: http://localhost/register
-- phpMyAdmin:（http://localhost:8080 でDB操作可能）
+- phpMyAdmin: http://localhost:8080
+
+## 👤 ログイン情報（例）
+一般ユーザー
+ユーザー名: テストユーザー
+email: test@example.com
+password: 12345678

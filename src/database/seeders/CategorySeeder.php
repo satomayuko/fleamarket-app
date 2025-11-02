@@ -21,13 +21,11 @@ class CategorySeeder extends Seeder
         ];
 
         foreach ($categories as $parentName => $children) {
-            // 親カテゴリを登録
             $parent = Category::firstOrCreate([
                 'name' => $parentName,
                 'parent_id' => null,
             ]);
 
-            // 子カテゴリを登録
             foreach ($children as $childName) {
                 Category::firstOrCreate([
                     'name' => $childName,

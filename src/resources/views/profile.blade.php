@@ -14,7 +14,7 @@
 
         <div class="user-info">
             <div class="user-info__avatar">
-                <img src="{{ $profile?->avatar_path ? asset('storage/' . $profile->avatar_path) : asset('images/avatar-placeholder.png') }}" alt="avatar">
+                <img src="{{ $profile->avatar_path ? asset('storage/' . $profile->avatar_path) : asset('images/avatar-placeholder.png') }}" alt="" aria-hidden="true">
             </div>
             <div class="user-info__name">{{ $user->name }}</div>
             <a href="{{ route('mypage.profile.edit') }}" class="user-info__edit">プロフィールを編集</a>

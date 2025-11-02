@@ -90,10 +90,11 @@
     background: none;
     border: none;
     cursor: pointer;
+    text-decoration: none;
 }
 
 .top-header__link:hover {
-    text-decoration: underline;
+    text-decoration: none;
 }
 
 .top-header__cta {
@@ -105,6 +106,11 @@
     border-radius: 5px;
     font-weight: 700;
     line-height: 1;
+    text-decoration: none;
+}
+
+.top-header__cta:hover {
+    text-decoration: none;
 }
 
 @media (max-width: 1511px) {

@@ -16,7 +16,7 @@
 
             <div class="avatar">
                 <div class="avatar__img">
-                    <img src="{{ $profile->avatar_path ? asset('storage/' . $profile->avatar_path) : asset('images/avatar-placeholder.png') }}" alt="avatar">
+                    <img src="{{ $profile->avatar_path ? asset('storage/' . $profile->avatar_path) : asset('images/avatar-placeholder.png') }}" alt="" aria-hidden="true">
                 </div>
 
                 <label for="avatar" class="avatar__button">画像を選択する</label>
