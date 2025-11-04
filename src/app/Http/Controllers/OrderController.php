@@ -18,30 +18,39 @@ class OrderController extends Controller
     {
         $this->assertPurchasable($item);
 
-        $user = Auth::user();
-
-        $defaultAddress = [
-            'zip' => $this->firstFilled($user, ['zip', 'zipcode', 'postal_code', 'postcode']),
-            'line' => $this->joinFilled(' ', [
-                $this->firstFilled($user, ['prefecture']),
-                $this->firstFilled($user, ['city']),
-                $this->firstFilled($user, ['street']),
-                $this->firstFilled($user, ['address', 'address1', 'address_line1']),
-                $this->firstFilled($user, ['building', 'address2', 'address_line2']),
-            ]),
-        ];
-
         $overridden = DB::table('addresses')
             ->where('user_id', Auth::id())
             ->latest('id')
             ->first();
 
         if ($overridden) {
-            $line = trim((string) ($overridden->address ?? '') . ' ' . (string) ($overridden->building ?? ''));
             $defaultAddress = [
-                'zip' => (string) ($overridden->zip ?? ''),
-                'line' => $line,
+                'zip' => (string)($overridden->zip ?? ''),
+                'line' => trim((string)($overridden->address ?? '') . ' ' . (string)($overridden->building ?? '')),
             ];
+        } else {
+            $profile = DB::table('profiles')
+                ->where('user_id', Auth::id())
+                ->first();
+
+            if ($profile) {
+                $defaultAddress = [
+                    'zip' => (string)($profile->postal_code ?? ''),
+                    'line' => trim((string)($profile->address ?? '') . ' ' . (string)($profile->building ?? '')),
+                ];
+            } else {
+                $user = Auth::user();
+                $defaultAddress = [
+                    'zip' => $this->firstFilled($user, ['zip', 'zipcode', 'postal', 'postal_code', 'postcode']),
+                    'line' => $this->joinFilled(' ', [
+                        $this->firstFilled($user, ['prefecture']),
+                        $this->firstFilled($user, ['city']),
+                        $this->firstFilled($user, ['street']),
+                        $this->firstFilled($user, ['address', 'address1', 'address_line1']),
+                        $this->firstFilled($user, ['building', 'address2', 'address_line2']),
+                    ]),
+                ];
+            }
         }
 
         return view('orders.confirm', [
@@ -56,7 +65,7 @@ class OrderController extends Controller
 
         $data = $request->validated();
 
-        Stripe::setApiKey((string) config('services.stripe.secret'));
+        Stripe::setApiKey((string)config('services.stripe.secret'));
 
         $session = Session::create([
             'payment_method_types' => [
@@ -66,7 +75,7 @@ class OrderController extends Controller
                 'price_data' => [
                     'currency' => 'jpy',
                     'product_data' => ['name' => $item->name],
-                    'unit_amount' => (int) $item->price,
+                    'unit_amount' => (int)$item->price,
                 ],
                 'quantity' => 1,
             ]],
@@ -75,12 +84,12 @@ class OrderController extends Controller
             'cancel_url' => route('orders.confirm', $item),
         ]);
 
-        return redirect((string) $session->url);
+        return redirect((string)$session->url);
     }
 
     public function success(Item $item): RedirectResponse
     {
-        if (! $item->isSold()) {
+        if (!$item->isSold()) {
             $item->update(['status' => 'sold']);
 
             $addr = DB::table('addresses')
@@ -89,9 +98,9 @@ class OrderController extends Controller
                 ->first();
 
             if ($addr) {
-                $shipZip = (string) ($addr->zip ?? '');
-                $shipAddress = (string) ($addr->address ?? '');
-                $shipBuilding = $addr->building !== null ? (string) $addr->building : null;
+                $shipZip = (string)($addr->zip ?? '');
+                $shipAddress = (string)($addr->address ?? '');
+                $shipBuilding = $addr->building !== null ? (string)$addr->building : null;
             } else {
                 $user = Auth::user();
                 $shipZip = $this->firstFilled($user, ['zip', 'zipcode', 'postal_code', 'postcode']);
@@ -136,17 +145,15 @@ class OrderController extends Controller
         foreach ($keys as $key) {
             $v = $model->{$key} ?? '';
             if ($v !== '' && $v !== null) {
-                return (string) $v;
+                return (string)$v;
             }
         }
-
         return '';
     }
 
     private function joinFilled(string $glue, array $parts): string
     {
-        $filtered = array_values(array_filter($parts, fn ($v) => $v !== '' && $v !== null));
-
+        $filtered = array_values(array_filter($parts, fn($v) => $v !== '' && $v !== null));
         return implode($glue, $filtered);
     }
 }
