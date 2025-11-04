@@ -16,6 +16,7 @@ class AddressRequest extends FormRequest
         return [
             'zip' => ['required', 'string', 'regex:/^\d{3}-\d{4}$/', 'size:8'],
             'address' => ['required', 'string', 'max:255'],
+            'building' => ['nullable', 'string', 'max:255'],
         ];
     }
 
@@ -24,6 +25,7 @@ class AddressRequest extends FormRequest
         return [
             'zip' => '郵便番号',
             'address' => '住所',
+            'building' => '建物名',
         ];
     }
 

@@ -9,8 +9,10 @@ use Illuminate\Support\Facades\DB;
 
 class AddressController extends Controller
 {
-    public function edit(Item $item)
+    public function edit(int $item_id)
     {
+        $item = Item::findOrFail($item_id);
+
         if ($item->user_id === Auth::id()) {
             abort(403);
         }
@@ -19,8 +21,7 @@ class AddressController extends Controller
             abort(410);
         }
 
-        $saved = DB::table('item_addresses')
-            ->where('item_id', $item->id)
+        $saved = DB::table('addresses')
             ->where('user_id', Auth::id())
             ->first();
 
@@ -48,8 +49,10 @@ class AddressController extends Controller
         ]);
     }
 
-    public function update(AddressRequest $request, Item $item)
+    public function update(AddressRequest $request, int $item_id)
     {
+        $item = Item::findOrFail($item_id);
+
         if ($item->user_id === Auth::id()) {
             abort(403);
         }
@@ -60,9 +63,8 @@ class AddressController extends Controller
 
         $now = now();
 
-        DB::table('item_addresses')->upsert(
+        DB::table('addresses')->upsert(
             [[
-                'item_id' => $item->id,
                 'user_id' => Auth::id(),
                 'zip' => $request->zip,
                 'address' => $request->address,
@@ -70,12 +72,12 @@ class AddressController extends Controller
                 'created_at' => $now,
                 'updated_at' => $now,
             ]],
-            ['item_id', 'user_id'],
+            ['user_id'],
             ['zip', 'address', 'building', 'updated_at']
         );
 
         return redirect()
-            ->route('orders.confirm', $item)
+            ->route('orders.confirm', $item->id)
             ->with('status', '配送先を更新しました');
     }
 

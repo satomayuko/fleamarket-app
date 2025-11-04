@@ -12,9 +12,11 @@ class Order extends Model
     protected $fillable = [
         'item_id',
         'buyer_id',
-        'shipping_address_id',
         'price_at_purchase',
         'status',
+        'ship_zip',
+        'ship_address',
+        'ship_building',
     ];
 
     public function item()

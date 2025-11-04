@@ -24,13 +24,11 @@ Route::get('/email/verify', function () {
 
 Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
     $request->fulfill();
-
     return redirect()->route('mypage.profile.edit');
 })->middleware(['auth', 'signed'])->name('verification.verify');
 
 Route::post('/email/verification-notification', function (Request $request) {
     $request->user()->sendEmailVerificationNotification();
-
     return back()->with('status', 'verification-link-sent');
 })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 
@@ -52,6 +50,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/purchase/{item}/checkout', [OrderController::class, 'checkout'])->name('orders.checkout');
     Route::get('/purchase/{item}/success', [OrderController::class, 'success'])->name('orders.success');
 
-    Route::get('/purchase/{item}/address', [AddressController::class, 'edit'])->name('orders.address');
-    Route::post('/purchase/{item}/address', [AddressController::class, 'update'])->name('orders.address.update');
+    Route::get('/purchase/address/{item_id}', [AddressController::class, 'edit'])
+        ->whereNumber('item_id')
+        ->name('orders.address');
+
+    Route::post('/purchase/address/{item_id}', [AddressController::class, 'update'])
+        ->whereNumber('item_id')
+        ->name('orders.address.update');
 });

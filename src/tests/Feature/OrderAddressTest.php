@@ -13,7 +13,7 @@ class OrderAddressTest extends TestCase
     use RefreshDatabase;
 
     /** @test */
-    public function 購入後に住所が注文に紐づいて登録される()
+    public function 購入後に住所スナップショットが注文に保存される()
     {
         $seller = User::factory()->create();
         $buyer = User::factory()->create();
@@ -30,11 +30,10 @@ class OrderAddressTest extends TestCase
             'published_at' => now(),
         ]);
 
-        $addrId = DB::table('item_addresses')->insertGetId([
-            'item_id' => $item->id,
+        DB::table('addresses')->insert([
             'user_id' => $buyer->id,
             'zip' => '123-4567',
-            'address' => '東京都渋谷区神南1-2-3',
+            'address' => '東京都 渋谷区 神南1-2-3',
             'building' => null,
             'created_at' => now(),
             'updated_at' => now(),
@@ -47,8 +46,10 @@ class OrderAddressTest extends TestCase
         $this->assertDatabaseHas('orders', [
             'item_id' => $item->id,
             'buyer_id' => $buyer->id,
-            'shipping_address_id' => $addrId,
             'status' => 'paid',
+            'ship_zip' => '123-4567',
+            'ship_address' => '東京都 渋谷区 神南1-2-3',
+            'ship_building' => null,
         ]);
 
         $this->assertDatabaseHas('items', [

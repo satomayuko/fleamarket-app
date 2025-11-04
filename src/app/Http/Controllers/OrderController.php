@@ -31,14 +31,13 @@ class OrderController extends Controller
             ]),
         ];
 
-        $overridden = DB::table('item_addresses')
-            ->where('item_id', $item->id)
+        $overridden = DB::table('addresses')
             ->where('user_id', Auth::id())
             ->latest('id')
             ->first();
 
         if ($overridden) {
-            $line = trim((string) ($overridden->address ?? '').' '.(string) ($overridden->building ?? ''));
+            $line = trim((string) ($overridden->address ?? '') . ' ' . (string) ($overridden->building ?? ''));
             $defaultAddress = [
                 'zip' => (string) ($overridden->zip ?? ''),
                 'line' => $line,
@@ -84,21 +83,36 @@ class OrderController extends Controller
         if (! $item->isSold()) {
             $item->update(['status' => 'sold']);
 
-            $address = DB::table('item_addresses')
-                ->where('item_id', $item->id)
+            $addr = DB::table('addresses')
                 ->where('user_id', Auth::id())
                 ->latest('id')
                 ->first();
 
-            $shippingAddressId = $address->id ?? null;
+            if ($addr) {
+                $shipZip = (string) ($addr->zip ?? '');
+                $shipAddress = (string) ($addr->address ?? '');
+                $shipBuilding = $addr->building !== null ? (string) $addr->building : null;
+            } else {
+                $user = Auth::user();
+                $shipZip = $this->firstFilled($user, ['zip', 'zipcode', 'postal_code', 'postcode']);
+                $shipAddress = $this->joinFilled(' ', [
+                    $this->firstFilled($user, ['prefecture']),
+                    $this->firstFilled($user, ['city']),
+                    $this->firstFilled($user, ['street']),
+                    $this->firstFilled($user, ['address', 'address1', 'address_line1']),
+                ]);
+                $shipBuilding = $this->firstFilled($user, ['building', 'address2', 'address_line2']) ?: null;
+            }
 
             Order::updateOrCreate(
                 ['item_id' => $item->id],
                 [
                     'buyer_id' => Auth::id(),
-                    'shipping_address_id' => $shippingAddressId,
                     'price_at_purchase' => $item->price,
                     'status' => 'paid',
+                    'ship_zip' => $shipZip,
+                    'ship_address' => $shipAddress,
+                    'ship_building' => $shipBuilding,
                 ]
             );
         }
