@@ -12,6 +12,10 @@ class CommentController extends Controller
 {
     public function store(CommentRequest $request, Item $item): RedirectResponse
     {
+        if ($item->user_id === Auth::id()) {
+            abort(403);
+        }
+
         $data = $request->validated();
 
         Comment::create([
